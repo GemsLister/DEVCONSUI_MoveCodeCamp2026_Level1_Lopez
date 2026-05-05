@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { MAINNET_PORTFOLIO_ID } from "../constants"
+import { TESTNET_PORTFOLIO_ID } from "../constants"
 
 // ============================================================================
 // CUSTOM HOOK FOR DYNAMIC META TAGS
@@ -40,9 +40,11 @@ const useMetaTags = (metadata: {
         // Create element if it doesn't exist
         element = document.createElement('meta');
         if ('property' in tag) {
-          element.setAttribute('property', tag.property);
+          const propTag = tag as { property: string; content: string };
+          element.setAttribute('property', propTag.property);
         } else {
-          element.setAttribute('name', tag.name);
+          const nameTag = tag as { name: string; content: string };
+          element.setAttribute('name', nameTag.name);
         }
         document.head.appendChild(element);
       }
@@ -66,19 +68,29 @@ const useMetaTags = (metadata: {
 // PORTFOLIO DATA CONFIGURATION
 // ============================================================================
 const defaultPortfolioData = {
-  name: "LADY DIANE BAUZON CASILANG",
-  course: "BS in Information Technology",
-  school: "FEU Institute of Technology",
-  about: "I am a fourth-year IT student and freelance designer who integrates technical troubleshooting with creative insight to deliver innovative, efficient solutions.",
+  name: "James Lester L. Lopez",
+  course: "Bachelor of Science in Information Technology",
+  school: "Bukidnon State University",
+  about: "I am a BSIT student specializing in Frontend and Mobile Architecture using React, TypeScript, and NativeWind. I focus on modular design and scalable mobile solutions.",
   skills: [
-    "Graphic Design",
-    "UI / UX Design",
-    "Project Management",
-    "Full Stack Development",
-    "Web & App Development"
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "TailwindCSS",
+    "Supabase",
+    "MongoDB",
+    "React Native",
+    "Firebase",
+    "Figma",
+    "Express",
+    "HTML",
+    "CSS",
+    "NodeJS",
+    "Git",
+    "Github"
   ],
-  linkedin: "https://www.linkedin.com/in/ldcasilang/",
-  github: "https://github.com/ldcasilang",
+  linkedin: "https://www.linkedin.com/in/james-lester-lopez-0a6695366/",
+  github: "https://github.com/GemsLister",
 }
 
 // Network configuration
@@ -99,10 +111,10 @@ const PortfolioView = () => {
   // ==========================================================================
   // STATE MANAGEMENT
   // ==========================================================================
-  const objectId = MAINNET_PORTFOLIO_ID;
+  const objectId = TESTNET_PORTFOLIO_ID;
   
   // Network state - default to testnet, can be changed if needed
-  const [currentNetwork, setCurrentNetwork] = useState<"testnet" | "mainnet">("mainnet");
+  const [currentNetwork, setCurrentNetwork] = useState<"testnet" | "mainnet">("testnet");
   
   const [portfolioData, setPortfolioData] = useState(defaultPortfolioData);
   const [isLoading, setIsLoading] = useState(false);
@@ -183,7 +195,11 @@ const PortfolioView = () => {
               about: fields.about || defaultPortfolioData.about,
               linkedin: fields.linkedin_url || defaultPortfolioData.linkedin,
               github: fields.github_url || defaultPortfolioData.github,
-              skills: fields.skills ? fields.skills.split(",").map(s => s.trim()) : defaultPortfolioData.skills,
+              skills: typeof fields.skills === 'string'
+                ? (fields.skills as string).split(",").map(skill => skill.trim())
+                : Array.isArray(fields.skills)
+                ? fields.skills
+                : defaultPortfolioData.skills,
             };
             
             setPortfolioData(newPortfolioData);
